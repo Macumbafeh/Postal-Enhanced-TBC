@@ -175,9 +175,9 @@ function Postal_BlackBook:Populate(level, value)
 			"arg1", self
 		)
 		dewdrop:AddLine()
+    dewdrop:AddLine("text",  L["Alts"], "hasArrow", true, "value", "alts" )
 		dewdrop:AddLine("text", L["Friends"], "hasArrow", true, "value", "friend" )
 		dewdrop:AddLine("text",  L["Guild"], "hasArrow", true, "value", "guild" )
-		dewdrop:AddLine("text",  L["Alts"], "hasArrow", true, "value", "alts" )
 	elseif level == 2 then
 		if value == "friend" then
 			local numFriends = GetNumFriends()
