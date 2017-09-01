@@ -33,6 +33,8 @@ L:RegisterTranslations("deDE", function() return {
 	["If this option is on, Alt-Clicking an item in your bags will send it instantly to the player in the To: field"] = "Wenn diese Option an ist wird Alt-Klicken auf ein Item in deinem Inventar es sofort an den Spieler senden der im 'Senden an' Feld eingetragen ist.",
 	["Auto-Send on Alt-Click"] = "Auto-Senden bei Alt-Klick",
 	["With this option on, Postal will mail an item as soon as it is attached if there is a recipient filled in."] = "Wenn diese Option an ist, wird Postal Items sofort beim hinzufügen an Nachrichten abschicken wenn der Empfänger bereits eingetragen ist.",
+	["Bulk-Send on Ctrl-Click"] = "Massen-Auswahl bei Strg-Klick",
+	["Auto-Attach similar items on Control-Click"] = "Automatisches Anhängen ähnlicher Gegenstände bei Strg-Klick",
 --forward
 	["Forward"] = "Weiterleiten",
 	["Forward a message. (Currently Broken)"] = "Weiterleiten einer Nachricht. (Gegenwärtig Defekt)",

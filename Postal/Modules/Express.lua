@@ -27,6 +27,7 @@ Postal_Express.defaults = {
 	EnableAltClick = true,
 	AutoSend = true,
 	MouseWheel = true,
+	BulkSend = true,
 }
 
 Postal_Express.consoleOptions = {
@@ -64,10 +65,18 @@ Postal_Express.consoleOptions = {
 			set = function(v) Postal_Express.db.char.AutoSend = v end,
 			order = 20,
 		},
+		BulkSend = {
+			type = 'toggle',
+			name = L["Auto-Send on Alt-Click"],
+			desc = L["With this option on, Postal will mail an item as soon as it is attached if there is a recipient filled in."],
+			get = function() return Postal_Express.db.char.BulkSend end,
+			set = function(v) Postal_Express.db.char.BulkSend = v end,
+			order = 25,
+		},
 		MouseWheel = {
 			type = 'toggle',
-			name = L["Mousewheel to scroll Inbox"],
-			desc = L["Scroll Inbox pages using the Mousewheel."],
+			name = L["Bulk-Send on Ctrl-Click"],
+			desc = L["Auto-Attach similar items on Control-Click"],
 			get = function() return Postal_Express.db.char.MouseWheel end,
 			set = function(v)
 				local self = Postal_Express
@@ -112,7 +121,7 @@ function Postal_Express:Reset()
 		self:UnregisterEvent("PLAYER_LEAVING_WORLD")
 	end
 end
-	
+
 function Postal_Express:OnEnable()
 	self:Hook("InboxFrame_OnClick", true)
 	self:SecureHook("InboxFrameItem_OnEnter")
@@ -125,14 +134,14 @@ function Postal_Express:OnEnable()
 end
 
 function Postal_Express:OnDisable()
-	-- Disabling modules unregisters all events/hook automatically
+-- Disabling modules unregisters all events/hook automatically
 end
 
 -- Ctrl-Click and Shift-Clicks Shortcuts for Mail, based on ExpressMail by Tekkub
 function Postal_Express:InboxFrameItem_OnEnter()
 	local tooltip = GameTooltip
 	local this = this
-	
+
 	local money, COD, _, hasItem, _, wasReturned, _, canReply = select(5, GetInboxHeaderInfo(this.index))
 	if hasItem and hasItem > 1 then
 		for i = 1, ATTACHMENTS_MAX_RECEIVE do
@@ -191,8 +200,14 @@ function Postal_Express:OnTooltipSetItem(tooltip, ...)
 	return self.hooks[tooltip].OnTooltipSetItem(tooltip, ...)
 end
 
-function Postal_Express:ContainerFrameItemButton_OnModifiedClick(...)
-	if select(1, ...) == "LeftButton" and IsAltKeyDown() and SendMailFrame:IsVisible() and not CursorHasItem() then
+local function GetContainerItemID(bag, slot)
+	if GetContainerItemLink(bag, slot) then
+		return tonumber(string.match(GetContainerItemLink(bag, slot), "item:(%d+)"))
+	end
+end
+
+function Postal_Express:ContainerFrameItemButton_OnModifiedClick(button, ...)
+	if button == "LeftButton" and IsAltKeyDown() and SendMailFrame:IsVisible() and not CursorHasItem() then
 		local bag, slot = this:GetParent():GetID(), this:GetID()
 		local texture, count = GetContainerItemInfo(bag, slot)
 		PickupContainerItem(bag, slot)
@@ -205,6 +220,51 @@ function Postal_Express:ContainerFrameItemButton_OnModifiedClick(...)
 					SendMailFrame_SendMail()
 				end
 			end
+		end
+	elseif button == "LeftButton" and IsControlKeyDown() and SendMailFrame:IsVisible() and not CursorHasItem() then
+		local bag, slot = this:GetParent():GetID(), this:GetID()
+		local itemid = GetContainerItemID(bag, slot)
+		if not itemid then return end
+		local itemlocked = select(3,GetContainerItemInfo(bag,slot))
+		local itemq, _,_, itemc, itemsc, _, itemes = select(3,GetItemInfo(itemid))
+		itemes = itemes and #itemes > 0
+		if Postal_Express.db.char.BulkSend and itemq and itemc then
+			-- itemc = itemq.."."..itemc
+			itemsc = itemc.."."..(itemsc or "")
+			local added = (itemlocked and 0) or -1
+			for pass = 0,4 do
+				for b = 0,4 do
+					for s = 1, GetContainerNumSlots(b) do
+						local tid = GetContainerItemID(b, s)
+						if not tid or select(3,GetContainerItemInfo(b,s)) then
+						-- item locked, already attached
+						else
+							local tq, _,_, tc, tsc, _, tes = select(3,GetItemInfo(tid))
+							-- tc = (tq or "").."."..(tc or "")
+							tsc = (tc or "").."."..(tsc or "")
+							tes = tes and #tes > 0
+							if (pass == 0 and itemq == 0 and tq == 0) -- vendor trash
+								or (pass == 0 and itemq == 2 and tq == 2 and itemes and tes) -- green boe gear
+								or (pass == 1 and tid == itemid) -- identical items
+								or (pass == 2 and tsc == itemsc) -- same subtype
+								or (pass == 3 and tc == itemc)   -- same type
+								or (pass == 4 and tq == itemq)   -- same quality
+							then
+								ClearCursor()
+								PickupContainerItem(b, s)
+								ClickSendMailItemButton()
+								if select(3,GetContainerItemInfo(b,s)) then -- now locked => added
+									added = added + 1
+								else -- failed
+									ClearCursor()
+								end
+							end
+						end
+					end
+				end
+				if added >= 1 then break end
+			end
+			ClearCursor()
 		end
 	else
 		self.hooks["ContainerFrameItemButton_OnModifiedClick"](...)
@@ -276,4 +336,3 @@ function Postal_Express:InboxMouseScroll(frame, direction)
 	end
 	return self.hooks[frame].OnMouseWheel(frame, direction)
 end
-

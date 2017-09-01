@@ -33,6 +33,8 @@ L:RegisterTranslations("enUS", function() return {
 	["With this option on, Postal will mail an item as soon as it is attached if there is a recipient filled in."] = true,
 	["Mousewheel to scroll Inbox"] = true,
 	["Scroll Inbox pages using the Mousewheel."] = true,
+	["Bulk-Send on Ctrl-Click"] = true,
+	["Auto-Attach similar items on Control-Click"] = true,
 --forward
 	["Forward"] = true,
 	["Forward a message. (Currently Broken)"] = true,

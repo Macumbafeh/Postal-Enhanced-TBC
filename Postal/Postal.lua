@@ -40,9 +40,9 @@ Postal:SetModuleMixins("AceEvent-2.0", "AceHook-2.1")
 Postal:RegisterDB("PostalDB", "PostalDBPerChar")
 Postal:RegisterDefaults("profile", {
 	OpenSpeed = 1.0,
-  BlackBook = {
-    alts = {}
-  }
+	BlackBook = {
+		alts = {}
+	}
 })
 
 -----------------------------
@@ -153,7 +153,7 @@ function Postal:OnInitialize()
 			end
 			self.consoleOptions.args.options.args[m] = module.consoleOptions
 		end
-	
+
 	end
 	self.version = (self.version or "1.0") .. " |cffff8888r" .. rev .. "|r"
 	self:RegisterChatCommand({"/postal"}, self.consoleOptions, "POSTAL")
