@@ -17,6 +17,7 @@ local openAll = function() this.owner:OpenAll() end
 local invFull
 local DeleteTheseTypes = {
 	AHPending = true,
+	NonAHMail = true,
 }
 
 ----------------------------------

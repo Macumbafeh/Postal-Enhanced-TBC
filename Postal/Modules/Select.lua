@@ -20,6 +20,7 @@ local lastItem
 local invFull
 local DeleteTheseTypes = {
 	AHPending = true,
+	NonAHMail = true,
 }
 local lastCheck
 

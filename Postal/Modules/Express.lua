@@ -67,16 +67,16 @@ Postal_Express.consoleOptions = {
 		},
 		BulkSend = {
 			type = 'toggle',
-			name = L["Auto-Send on Alt-Click"],
-			desc = L["With this option on, Postal will mail an item as soon as it is attached if there is a recipient filled in."],
+			name = L["Bulk-Send on Ctrl-Click"],
+			desc =  L["Auto-Attach similar items on Control-Click"],
 			get = function() return Postal_Express.db.char.BulkSend end,
 			set = function(v) Postal_Express.db.char.BulkSend = v end,
 			order = 25,
 		},
 		MouseWheel = {
 			type = 'toggle',
-			name = L["Bulk-Send on Ctrl-Click"],
-			desc = L["Auto-Attach similar items on Control-Click"],
+			name = L["Mousewheel to scroll Inbox"],
+			desc = L["Scroll Inbox pages using the Mousewheel."],
 			get = function() return Postal_Express.db.char.MouseWheel end,
 			set = function(v)
 				local self = Postal_Express
