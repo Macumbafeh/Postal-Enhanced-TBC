@@ -115,7 +115,7 @@ Postal.consoleOptions = {
 		speed = {
 			name = L["Opening Speed"], type = 'range',
 			desc = L["The time in seconds between opening each mail/item/money. Setting this to a very fast speed may disconnect you while opening mail."],
-			min = 0.3,
+			min = 0.1,
 			max = 2.0,
 			step = 0.05,
 			get = function() return Postal.db.profile.OpenSpeed end,
