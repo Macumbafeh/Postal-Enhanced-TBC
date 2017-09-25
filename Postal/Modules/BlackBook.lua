@@ -60,7 +60,7 @@ function Postal_BlackBook:OnEnable()
 		end)
 	end
 	self:RegisterEvent("MAIL_SHOW")
-  self:RegisterEvent("PLAYER_ENTERING_WORLD", "AddAlt")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "AddAlt")
 	-- For enabling after a disable
 	Postal_BlackBookButton:Show()
 end
@@ -94,12 +94,12 @@ function Postal_BlackBook:AddAlt()
 	enableAltsMenu = false
 	for i = #db, 1, -1 do
 		local p, f, l, c, lc = strsplit("|", db[i])
-    lc = lc or UNKNOWN
+		lc = lc or UNKNOWN
 		if p == player and f == faction then
 			tremove(db, i)
 		end
 		if p ~= player and f == faction then
-			enableAltsMenu = true			
+			enableAltsMenu = true
 		end
 	end
 	tinsert(db, namestring)
@@ -112,7 +112,7 @@ function Postal_BlackBook.DeleteAlt(dropdownbutton, arg1, arg2, checked)
 	--local realm = GetRealmName()
 	local faction = UnitFactionGroup("player")
 	local player = UnitName("player")
-  local db = Postal.db.profile.BlackBook.alts
+	local db = Postal.db.profile.BlackBook.alts
 	enableAltsMenu = false
 	for i = #db, 1, -1 do
 		if arg1 == db[i] then
@@ -175,16 +175,23 @@ function Postal_BlackBook:Populate(level, value)
 			"arg1", self
 		)
 		dewdrop:AddLine()
-    dewdrop:AddLine("text",  L["Alts"], "hasArrow", true, "value", "alts" )
+		dewdrop:AddLine("text",  L["Alts"], "hasArrow", true, "value", "alts" )
 		dewdrop:AddLine("text", L["Friends"], "hasArrow", true, "value", "friend" )
 		dewdrop:AddLine("text",  L["Guild"], "hasArrow", true, "value", "guild" )
 	elseif level == 2 then
 		if value == "friend" then
 			local numFriends = GetNumFriends()
 			for i = 1, numFriends do
-        local name, level, lclass = GetFriendInfo(i);
-        local class = (friends:GetEnglishClass(name)):upper() or UNKNOWN
-        local namestring = ("%s|%s|%s|%s"):format(name, level, class, lclass)
+				local name, level, lclass = GetFriendInfo(i);
+
+				local class;
+				if friends:GetEnglishClass(name) then
+					class = (friends:GetEnglishClass(name)):upper() or UNKNOWN
+				else
+					if lclass then class = lclass else class = UNKNOWN end
+				end
+
+				local namestring = ("%s|%s|%s|%s"):format(name, level, class, lclass)
 				--sorttable[i] = GetFriendInfo(i)
 				sorttable[i] = namestring
 			end
@@ -194,9 +201,9 @@ function Postal_BlackBook:Populate(level, value)
 			if not ignoresortlocale[GetLocale()] then table.sort(sorttable) end
 			if numFriends > 0 and numFriends <= 25 then
 				for i = 1, numFriends do
-          local p, l, c, cl = strsplit("|", sorttable[i])
-            local clr = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[c] or RAID_CLASS_COLORS[c] or {r=1,g=1,b=1}
-            local ptext = format("%s |cff%.2x%.2x%.2x(%d %s)|r", p, clr.r*255, clr.g*255, clr.b*255, l, cl)
+					local p, l, c, cl = strsplit("|", sorttable[i])
+					local clr = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[c] or RAID_CLASS_COLORS[c] or {r=1,g=1,b=1}
+					local ptext = format("%s |cff%.2x%.2x%.2x(%d %s)|r", p, clr.r*255, clr.g*255, clr.b*255, l, cl)
 					--local name = sorttable[i]
 					dewdrop:AddLine(
 						"text", ptext,
@@ -215,10 +222,10 @@ function Postal_BlackBook:Populate(level, value)
 		elseif value == "guild" then
 			local numFriends = GetNumGuildMembers(true)
 			for i = 1, numFriends do
-        -- updated by fuba
+				-- updated by fuba
 				--local name, rank = GetGuildRosterInfo(i)
-        --sorttable[i] = name.." |cffffd200("..rank..")|r"
-        local name, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName, achievementPoints, achievementRank, isMobile, canSoR = GetGuildRosterInfo(i)
+				--sorttable[i] = name.." |cffffd200("..rank..")|r"
+				local name, rank, rankIndex, level, class, zone, note, officernote, online, status, classFileName, achievementPoints, achievementRank, isMobile, canSoR = GetGuildRosterInfo(i)
 				local c = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[classFileName] or RAID_CLASS_COLORS[classFileName] or {r=1,g=1,b=1}
 				sorttable[i] = format("%s |cffffd200(%s)|r |cff%.2x%.2x%.2x(%d %s)|r", name, rank, c.r*255, c.g*255, c.b*255, level, class)
 			end
@@ -242,36 +249,36 @@ function Postal_BlackBook:Populate(level, value)
 					dewdrop:AddLine("text", L["Part %d"]:format(num), "hasArrow", true, "value", "gpart"..num )
 				end
 			end
-    elseif value == "alts" then
-      -- Add Alts here (added by fuba for 2.4.3)
-      if not enableAltsMenu then return end
-      local db = Postal.db.profile.BlackBook.alts
-      local realm = GetRealmName()
+		elseif value == "alts" then
+			-- Add Alts here (added by fuba for 2.4.3)
+			if not enableAltsMenu then return end
+			local db = Postal.db.profile.BlackBook.alts
+			local realm = GetRealmName()
 			local faction = UnitFactionGroup("player")
 			local player = UnitName("player")
-      
-      for i = 1, #db do
-        local p, f, l, c, lc = strsplit("|", db[i])
-        lc = lc or UNKNOWN
-        if f == faction and p ~= player then
+
+			for i = 1, #db do
+				local p, f, l, c, lc = strsplit("|", db[i])
+				lc = lc or UNKNOWN
+				if f == faction and p ~= player then
 					if l and c then
 						local clr = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[c] or RAID_CLASS_COLORS[c] or {r=1,g=1,b=1}
-						local ptext = format("%s |cff%.2x%.2x%.2x(%d %s)|r", p, clr.r*255, clr.g*255, clr.b*255, l, lc)            
-            dewdrop:AddLine(
-              "text", ptext,
-              "func", SetSendMailName,
-              "arg1", p
-            )
+						local ptext = format("%s |cff%.2x%.2x%.2x(%d %s)|r", p, clr.r*255, clr.g*255, clr.b*255, l, lc)
+						dewdrop:AddLine(
+							"text", ptext,
+							"func", SetSendMailName,
+							"arg1", p
+						)
 					else
 						dewdrop:AddLine(
-              "text", p,
-              "func", SetSendMailName,
-              "arg1", p
-            )
+							"text", p,
+							"func", SetSendMailName,
+							"arg1", p
+						)
 					end
 				end
-      end
-      
+			end
+
 		end
 	elseif level == 3 then
 		if type(value) == "string" then
